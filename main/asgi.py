@@ -22,6 +22,14 @@ from channels.routing import ProtocolTypeRouter, URLRouter
 from channels.auth import AuthMiddlewareStack
 import apps.portal.routing
 
+from dotenv import load_dotenv
+
+
+# Loading environment variables file
+load_dotenv(
+    os.path.join(os.path.dirname(os.path.dirname(__file__)), '.env')
+)
+
 # os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'main.settings')
 # django.setup()
 
@@ -43,10 +51,3 @@ application = ProtocolTypeRouter(
         'websocket': URLRouter(apps.portal.routing.websocket_urlpatterns),
     }
 )
-
-# os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'main.settings')
-
-# application = ProtocolTypeRouter({
-#     'http': get_asgi_application(),
-#     'websocket': URLRouter(apps.portal.routing.websocket_urlpatterns),
-# })
