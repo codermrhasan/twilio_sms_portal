@@ -23,12 +23,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-sj2zu_gs&$l65w633l0r9z!3ilct=bniyb8dlq_p72hsxr=-(m'
+SECRET_KEY = os.environ.get('SMS_SECRET_KEY', '')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get('SMS_DEBUG') != 'False'
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = os.environ.get('SMS_ALLOWED_HOSTS').split(',')
 
 
 # Application definition
@@ -82,12 +82,24 @@ WSGI_APPLICATION = 'main.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+if os.environ.get('SMS_DB') == "postgres":
+    DATABASES = {
+        'default': {
+            'ENGINE': "django.db.backends.postgresql",
+            'NAME': os.environ.get('SMS_DB_NAME'),
+            'USER': os.environ.get('SMS_DB_USER'),
+            'PASSWORD': os.environ.get('SMS_DB_PASSWORD'),
+            'HOST': 'localhost',
+            'PORT': 5432,
+        }
     }
-}
+else:
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": os.path.join(BASE_DIR, "db.sqlite3"),
+        }
+    }
 
 
 # Password validation
@@ -124,6 +136,8 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
+STATICFILES_STORAGE = "django.contrib.staticfiles.storage.ManifestStaticFilesStorage"
+
 STATIC_URL = 'static/'
 
 STATICFILES_DIRS = [
@@ -144,15 +158,67 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 REMEMBER_ME_EXPIRY = datetime.timedelta(days=7).total_seconds()
 
-
-CHANNEL_LAYERS = {
-    'default': {
-        'BACKEND': 'channels.layers.InMemoryChannelLayer',
-    },
-}
+if os.environ.get('SMS_CHANNEL_LAYERS') == "redis":
+    CHANNEL_LAYERS = {
+        'default': {
+            'BACKEND': 'channels_redis.core.RedisChannelLayer',
+            'CONFIG': {
+                "hosts": [('127.0.0.1', 6379)],
+            },
+        },
+    }
+else:
+    CHANNEL_LAYERS = {
+        'default': {
+            'BACKEND': 'channels.layers.InMemoryChannelLayer',
+        },
+    }
 
 ASGI_APPLICATION = "main.asgi.application"
 
-BASE_URL = "https://1e60-118-179-63-42.ngrok-free.app"
+BASE_URL = os.environ.get("SMS_BASE_URL")
 
-CSRF_TRUSTED_ORIGINS = [BASE_URL] # TODO: turn off this in prod
+CSRF_TRUSTED_ORIGINS = os.environ.get('SMS_CSRF_TRUSTED_ORIGINS').split(',')
+
+
+
+
+
+
+# Logger
+# Specify the log directory
+LOG_DIR = os.path.join(BASE_DIR, 'logs')
+
+# Create the log directory if it doesn't exist
+if not os.path.exists(LOG_DIR):
+    os.makedirs(LOG_DIR)
+
+# Generate a unique log file name using the current date
+log_file = datetime.datetime.now().strftime('%Y-%m-%d') + '.log'
+log_path = os.path.join(LOG_DIR, log_file)
+
+# Logging configuration
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'file': {
+            'level': os.environ.get("SMS_LOG_LEVEL", 'DEBUG'),
+            'class': 'logging.FileHandler',
+            'filename': log_path,
+            'formatter': 'verbose',
+        },
+    },
+    'loggers': {
+        '': {
+            'handlers': ['file'],
+            'level': os.environ.get("SMS_LOG_LEVEL", 'DEBUG'),
+            'propagate': True,
+        },
+    },
+    'formatters': {
+        'verbose': {
+            'format': '%(asctime)s [%(levelname)s] %(module)s %(message)s'
+        },
+    },
+}
