@@ -182,9 +182,6 @@ CSRF_TRUSTED_ORIGINS = os.environ.get('SMS_CSRF_TRUSTED_ORIGINS').split(',')
 
 
 
-
-
-
 # Logger
 # Specify the log directory
 LOG_DIR = os.path.join(BASE_DIR, 'logs')
