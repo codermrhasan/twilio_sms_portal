@@ -10,7 +10,7 @@ class HomeView(LoginRequiredMixin, View):
     # raise_exception = True
 
     def get(self, request):
-        sound_profile = SoundProfile.objects.get(is_default=True)
+        sound_profile = SoundProfile.objects.filter(is_default=True).first()
         return render(request, 'portal/home.html', {'sound_profile': sound_profile})
     
 
