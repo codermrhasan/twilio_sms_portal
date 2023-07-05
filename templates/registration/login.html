@@ -1,0 +1,87 @@
+{% extends 'registration/base.html' %}
+
+
+{% block page_title %}Login{% endblock %}
+
+{% block main_body %}
+<div class="auth-bg">
+    <div class="container p-0">
+        <div class="row justify-content-center g-0">
+            <div class="col-xl-9 col-lg-8">
+                <div class="authentication-page-content shadow-lg">
+                    <div class="d-flex flex-column h-100 px-4 pt-4">
+                        <div class="row justify-content-center">
+                            <div class="col-sm-8 col-lg-6 col-xl-6">
+
+                                <div class="py-md-5 py-4">
+
+                                    <div class="text-center mb-5">
+                                        <h3>Welcome Back !</h3>
+                                        <p class="text-muted te">Sign in to continue to Portal.</p>
+                                    </div>
+                                    {% if form.errors %}
+                                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                        Username and/or Password missmatch!
+                                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                      </div>
+                                    {% endif %}
+                                    <form method="post">
+                                        {% csrf_token %}
+                                        <div class="mb-3">
+                                            <label for="username" class="form-label">Username</label>
+                                            <input type="text" class="form-control" name="username" id="username"
+                                                placeholder="Enter username">
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <label for="userpassword" class="form-label">Password</label>
+                                            <div class="position-relative auth-pass-inputgroup mb-3">
+                                                <input type="password" name="password" class="form-control pe-5"
+                                                    placeholder="Enter Password" id="password-input">
+                                                <button
+                                                    class="btn btn-link position-absolute end-0 top-0 text-decoration-none text-muted"
+                                                    type="button" id="password-addon"><i
+                                                        class="ri-eye-fill align-middle"></i></button>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-check form-check-info fs-16">
+                                            <input class="form-check-input" type="checkbox" name="remember_me" id="remember-check">
+                                            <label class="form-check-label fs-14" for="remember-check">
+                                                Remember me
+                                            </label>
+                                        </div>
+
+                                        <div class="text-center mt-4">
+                                            <button class="btn btn-primary w-100" type="submit">Log In</button>
+                                        </div>
+                                        
+                                    </form><!-- end form -->
+
+                                    
+                                </div>
+                            </div><!-- end col -->
+                        </div><!-- end row -->
+
+                        <div class="row">
+                            <div class="col-xl-12">
+                                <div class="text-center text-muted p-4">
+                                    <p class="mb-0">&copy;
+                                        <script>document.write(new Date().getFullYear())</script> Portal. Crafted with <i
+                                            class="mdi mdi-heart text-danger"></i> by <a href="https://www.sigmosoft.com">Sigmosoft</a>
+                                    </p>
+                                </div>
+                            </div><!-- end col -->
+                        </div><!-- end row -->
+
+                    </div>
+                </div>
+            </div>
+            <!-- end col -->
+        </div>
+        <!-- end row -->
+    </div>
+    <!-- end container-fluid -->
+</div>
+<!-- end auth bg -->
+{% endblock %}

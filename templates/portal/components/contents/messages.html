@@ -1,0 +1,130 @@
+{% load static %}
+<!-- Start User chat -->
+<div class="user-chat w-100 overflow-hidden d-none">
+
+    <div class="chat-content d-lg-flex">
+        <!-- start chat conversation section -->
+        <div class="w-100 overflow-hidden position-relative">
+            <!-- conversation user -->
+            <div id="users-chat" class="position-relative">
+                <div class="py-3 user-chat-topbar">
+                    <div class="row align-items-center">
+                        <div class="col-sm-4 col-8">
+                            <div class="d-flex align-items-center">
+                                <div class="flex-shrink-0 d-block d-lg-none me-3">
+                                    <a href="javascript: void(0);" class="btn-primary user-chat-remove fs-18 p-1"><i
+                                            class="bx bx-chevron-left align-middle text-white"></i></a>
+                                </div>
+                                <div class="flex-grow-1 overflow-hidden">
+                                    <div class="d-flex align-items-center">
+                                        <div style="width: 2.4rem; height: 2.4rem;" class="flex-shrink-0 chat-user-img online user-own-img align-self-center me-3 ms-0">
+                                            <span class="avatar-title rounded-circle bg-primary text-white">
+                                                <span class="username"></span>
+                                            </span>
+                                        </div>
+                                        <div class="flex-grow-1 overflow-hidden">
+                                            <h6 class="text-truncate mb-0 fs-18"><a href="#"
+                                                    class="user-profile-show text-reset">
+                                                </a></h6>
+                                            <p class="text-truncate text-muted mb-0"><small>
+                                            </small></p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                    </div>
+
+                </div>
+                <!-- end chat user head -->
+
+
+                <!-- start chat conversation -->
+
+                <div class="chat-conversation p-3 p-lg-4 " id="chat-conversation" data-simplebar style="height: calc(100vh - 128px);">
+                    <ul class="list-unstyled chat-conversation-list" id="users-conversation">
+                    </ul>
+                </div>
+
+                <div class="alert alert-warning alert-dismissible copyclipboard-alert px-4 fade" role="alert">
+                    
+                </div>
+                
+                <!-- end chat conversation end -->
+            </div>
+
+            <!-- start chat input section -->
+            <div class="position-relative">
+                <div class="chat-input-section p-4 border-top">
+
+                    <form id="chatinput-form" enctype="multipart/form-data" 
+                        method="post" action="{% url 'message' %}">
+                        {% csrf_token %}
+                        <div class="row g-0 align-items-center">
+                            <div class="file_Upload"></div>
+                            <div class="col-auto">
+                                <div class="chat-input-links me-md-2">
+                                    
+                                    <div class="links-list-item" data-bs-toggle="tooltip" data-bs-trigger="hover"
+                                        data-bs-placement="top" title="Emoji">
+                                        <button type="button"
+                                            class="btn btn-link text-decoration-none btn-lg waves-effect emoji-btn"
+                                            id="emoji-btn">
+                                            <i class="bx bx-smile align-middle"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="position-relative">
+                                    <textarea autocomplete="off" type="text" style="resize: none;"
+                                    name="text" class="form-control  bg-light border-0 chat-input" autofocus
+                                    id="chat-input" placeholder="Type your message..."  rows="3" required></textarea>
+                                    <!-- <input autocomplete="off" type="text"
+                                        class="form-control  bg-light border-0 chat-input" autofocus
+                                        id="chat-input" placeholder="Type your message..."> -->
+                                    
+                                </div>
+                            </div>
+                            <div class="col-auto">
+                                <div class="chat-input-links ms-2 gap-md-1">
+                                    <div class="links-list-item">
+                                        <button type="submit"
+                                            class="btn btn-primary btn-lg chat-send waves-effect waves-light"
+                                            data-bs-toggle="collapse" data-bs-target=".chat-input-collapse1.show">
+                                            <i class="bx bxs-send align-middle" id="submit-btn"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                    
+                </div>
+                <div class="replyCard">
+                    <div class="card mb-0">
+                        <div class="card-body py-3">
+                            <div class="replymessage-block mb-0 d-flex align-items-start">
+                                <div class="flex-grow-1">
+                                    <h5 class="conversation-name"></h5>
+                                    <p class="mb-0"></p>
+                                </div>
+                                <div class="flex-shrink-0">
+                                    <button type="button" id="close_toggle"
+                                        class="btn btn-sm btn-link mt-n2 me-n3 fs-18">
+                                        <i class="bx bx-x align-middle"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- end chat input section -->
+        </div>
+        <!-- end chat conversation section -->
+    </div>
+    <!-- end user chat content -->
+</div>
+<!-- End User chat -->

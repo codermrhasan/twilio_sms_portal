@@ -1,0 +1,30 @@
+{% load static %}
+<!-- contactModal -->
+<div class="modal fade contactModal" tabindex="-1" role="dialog" aria-labelledby="pinnedtabModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content modal-header-colored border-0">
+            <form id="contactConversationForm" method="post" action="{% url 'contact_n_conversation' %}"  enctype="multipart/form-data">
+            <div class="modal-header">
+                <h5 class="modal-title text-white fs-16" id="pinnedtabModalLabel">New Message</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close">
+                </button>
+            </div>
+            <div class="modal-body p-4">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="addcontactphone-input" class="form-label">Phone</label>
+                        <input name="phone" type="phone" class="form-control" id="addcontactphone-input"
+                            placeholder="Phone: +1XXXXXXXXXXX " required>
+                    </div>
+            </div>
+            <div class="modal-footer">
+                <a href="javascript:void(0);" class="btn btn-link" data-bs-dismiss="modal"><i
+                        class="ri-close-fill align-bottom"></i> Cancel</a>
+                <button type="submit" class="btn btn-primary"><i class="bx bxs-send align-middle"></i></button>
+            </div>
+            </form>
+        </div>
+    </div>
+</div>
+<!-- contactModal -->

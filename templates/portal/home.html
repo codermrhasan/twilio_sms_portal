@@ -1,0 +1,21 @@
+{% extends 'portal/base.html' %}
+{% load static %}
+
+{% block main_body %}
+<!-- start chat-leftsidebar -->
+<div class="chat-leftsidebar">
+
+    <div class="tab-content">
+        {% include 'portal/components/tab_panes/profile.html' %}
+        {% include 'portal/components/tab_panes/chat.html' %}
+        {% include 'portal/components/tab_panes/contacts.html' %}
+        {% include 'portal/components/tab_panes/settings.html' %}
+    </div>
+    <!-- end tab content -->
+</div>
+<!-- end chat-leftsidebar -->
+
+{% include 'portal/components/contents/messages.html' %}
+{% include 'portal/components/modals/contact_modal.html' %}
+
+{% endblock %}

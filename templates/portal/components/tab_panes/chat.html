@@ -1,0 +1,68 @@
+{% load static %}
+<!-- Start chats tab-pane -->
+<div class="tab-pane show active" id="pills-chat" role="tabpanel" aria-labelledby="pills-chat-tab">
+    <!-- Start chats content -->
+    <div>
+        <div class="px-4 pt-4">
+            <div class="d-flex align-items-start">
+                <div class="flex-grow-1">
+                    <h4 class="mb-4">Messages <span class="text-primary fs-13 total-message"></span></h4>
+                </div>
+            </div>
+            <form>
+                <div class="input-group search-panel mb-3">
+                    <input type="text" class="form-control bg-light border-0" id="searchChatUser" onkeyup="searchUser()"
+                        placeholder="Search here..." aria-label="Example text with button addon"
+                        aria-describedby="searchbtn-addon" autocomplete="off">
+                    <button class="btn btn-light p-0" type="button" id="searchbtn-addon"><i
+                            class='bx bx-search align-middle'></i></button>
+                </div>
+            </form>
+        </div> <!-- .p-4 -->
+
+        <div class="chat-room-list" data-simplebar>
+            <!-- Start chat-message-list -->
+
+            
+
+            <div class="d-flex align-items-center px-4 mt-3 mb-2">
+                <!-- <div class="flex-grow-1">
+                    <h4 class="mb-0 fs-11 text-muted text-uppercase">Direct Messages</h4>
+                </div> -->
+                <div class="flex-shrink-0 form-control p-0 border-0" style="max-width: 269px;">
+                    <div data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="top" title="New Message">
+
+                        <!-- Button trigger modal -->
+                        <button type="button" class="btn btn-success form-control bg-primary border-primary text-white" data-bs-toggle="modal"
+                            data-bs-target=".contactModal">
+                            New Message
+                            <i class="bx bx-plus align-middle"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="chat-message-list">
+
+                <ul class="list-unstyled chat-list chat-user-list" id="usersList">
+                </ul>
+
+                <div class="d-flex align-items-center px-4 mt-4 mb-2 ">
+                    <div class="flex-shrink-0 form-control p-0 border-0" style="max-width: 269px;">
+                        <button type="button" class="btn btn-light form-control more_conversations_btn d-none" data-next_page="1">
+                            More Messages ...
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+            
+            <!-- End chat-message-list -->
+        </div>
+
+    </div>
+    <!-- Start chats content -->
+</div>
+<!-- End chats tab-pane -->
+
+
