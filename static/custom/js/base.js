@@ -96,10 +96,10 @@ function copyToClipboard(text) {
 }
 
 // chat user responsive hide show
-function toggleSelected() {
+function toggleSelected(conversation_id="") {
     var userChatElement = document.getElementsByClassName("user-chat");
 
-    $( ".chat-user-list li a" ).on( "click", function() {
+    $( `.chat-user-list li#conversation-id-${conversation_id} a` ).on( "click", function() {
         // setup name first then make blank of that componenet, set a loader. finally after rendering complete remove loader
         // let user_chat_topbar = $(".user-chat-topbar");
         // let title = user_chat_topbar.find(".avatar-title");
@@ -394,7 +394,7 @@ function prependSingleConversation(conversation_id, contact_name, contact_phone,
     makeReadUnreadFlagConversation(conversation_id=conversation_id, is_read=is_read);
     makeLeadFlagConversation(conversation_id=conversation_id, is_lead=is_lead)
     makeRepliedFlagConversation(conversation_id=conversation_id, is_replied=is_replied)
-    toggleSelected();
+    toggleSelected(conversation_id=conversation_id);
 }
 
 function appendSingleConversation(conversation_id, contact_name, contact_phone, last_message, is_read, is_lead, is_replied){
@@ -427,7 +427,7 @@ function appendSingleConversation(conversation_id, contact_name, contact_phone, 
     makeReadUnreadFlagConversation(conversation_id=conversation_id, is_read=is_read);
     makeLeadFlagConversation(conversation_id=conversation_id, is_lead=is_lead)
     makeRepliedFlagConversation(conversation_id=conversation_id, is_replied=is_replied)
-    toggleSelected();
+    toggleSelected(conversation_id=conversation_id);
 }
 
 // // updating chat messages
