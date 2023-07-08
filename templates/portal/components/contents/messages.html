@@ -33,6 +33,32 @@
                                 </div>
                             </div>
                         </div>
+
+                        <div class="col-sm-8 col-4">
+                            <ul class="list-inline user-chat-nav text-end mb-0">
+
+                                <li class="list-inline-item d-none d-lg-inline-block me-2 ms-0">
+                                    <form id="contact_block_unblock_form" action="{% url 'contact' %}" method="post">
+                                        {% csrf_token %}
+                                        <label for="contact_block_unblock_form_submit"></label>
+                                        <button type="submit" class="btn nav-btn" id="contact_block_unblock_form_submit">
+                                            <i class='bx bx-block'></i>
+                                        </button>
+                                    </form>
+                                </li>
+                                
+                                <li class="list-inline-item d-none d-lg-inline-block me-2 ms-0">
+                                    <form id="mark_as_read_unread_form" action="{% url 'mark_as_read_unread' %}" method="post">
+                                        {% csrf_token %}
+                                        <label for="#mark_as_read_unread_form_submit">Mark As Read</label>
+                                        <button type="submit" class="btn nav-btn" id="mark_as_read_unread_form_submit">
+                                            <i class='bx bxs-envelope-open' ></i>
+                                        </button>
+                                    </form>
+                                </li>
+
+                            </ul>
+                        </div>
                         
                     </div>
 

@@ -1,3 +1,4 @@
+from django.http import HttpResponse
 from django.views import View
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import JsonResponse
@@ -6,6 +7,8 @@ from apps.portal.models import TwilioAccount, PhoneNumber, Contact, Conversation
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.core import serializers
 import json
+from channels.layers import get_channel_layer
+from asgiref.sync import async_to_sync
 
 from apps.portal.libs.messages import TwilioAPI
 
@@ -14,7 +17,7 @@ class MessageView(LoginRequiredMixin, View):
         # twilio_account_id = request.GET.get('twilio_account_id')
         # contact_id = request.GET.get('contact_id')
         conversation_id = int(request.GET.get('conversation_id'))
-        messages = Message.objects.filter(conversation__id=conversation_id)
+        messages = Message.objects.filter(conversation__id=conversation_id, conversation__twilio_account__user=self.request.user)
         # messages = request.user.twilio_account.conversations.all()
         # Set the default pagination size
         page_number = request.GET.get('page', 1)
@@ -58,12 +61,25 @@ class MessageView(LoginRequiredMixin, View):
             return JsonResponse(response_data, status=404)
         
     def post(self, request):
+        # send message
         # twilio_account_id = request.GET.get('twilio_account_id')
         # contact_id = request.GET.get('contact_id')
-        js_sms_uuid = request.POST.get('js_sms_uuid') if request.POST.get('js_sms_uuid') else ""
+        # js_sms_uuid = request.POST.get('js_sms_uuid') if request.POST.get('js_sms_uuid') else ""
         conversation_id = int(request.POST.get('conversation_id'))
         text = request.POST.get('text')
-        conversation = Conversation.objects.get(id=conversation_id)
+        conversation = Conversation.objects.get(id=conversation_id, twilio_account__user=self.request.user)
+
+        if conversation.contact.is_blocked:
+            response_data = {
+                'status': 403,
+                'message': 'Success',
+                'data': {
+                    'results': {
+                        'is_blocked': True,
+                    },
+                }
+            }
+            return JsonResponse(response_data, status=200)
 
         twilio_account = request.user.twilio_account
         twilio = twilio_account.get_twilio_api_obj()
@@ -79,16 +95,29 @@ class MessageView(LoginRequiredMixin, View):
             status = response.status,
         )
 
+        channel_name = f"user_{request.user.id}"
+
         # Serialize messages for the current page
         serialized_message = message.to_json() #[message.to_json() for message in page_obj]
+
+
+        response_data = {
+            'type': "sent_sms_status",
+            'results': serialized_message
+        }
+
+        # Send notification to relevant channel
+        channel_layer = get_channel_layer()
+        async_to_sync(channel_layer.group_send)(channel_name, {
+            'type': 'chat_message',
+            'message': response_data,
+        })
+        
         response_data = {
             'status': 200,
             'message': 'Success',
-            'data': {
-                'results': serialized_message,
-                'js_sms_uuid': js_sms_uuid
-            }
         }
         return JsonResponse(response_data, status=200)
+
     
 

@@ -6,6 +6,7 @@ from .views import (
     ConversationView,
     MessageView,
     ContactNConversationView,
+    MarkAsReadUnreadView,
 )
 
 
@@ -13,6 +14,7 @@ urlpatterns = [
     path('', HomeView.as_view(), name='home'),
     path('contact/', ContactView.as_view(), name='contact'),
     path('conversation/', ConversationView.as_view(), name='conversation'),
+    path('conversation/mark-as-read-unread/', MarkAsReadUnreadView.as_view(), name='mark_as_read_unread'),
     path('message/', MessageView.as_view(), name='message'), # chat in frontend
     path('contact-n-conversation/', ContactNConversationView.as_view(), name='contact_n_conversation'),
     path('webhook/receive-sms/', receive_sms, name='webhook_receive_sms'),

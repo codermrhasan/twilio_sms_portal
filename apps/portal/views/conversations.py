@@ -54,4 +54,28 @@ class ConversationView(LoginRequiredMixin, View):
                 'message': 'Page not found',
             }
             return JsonResponse(response_data, status=404)
+
+       
+class MarkAsReadUnreadView(LoginRequiredMixin, View):
+    def post(self, request):
+
+        data = request.POST
+        is_read = data.get('is_read') == 'true'
+        conversation_id = int(data.get('conversation_id'))
+        conversation = request.user.twilio_account.conversations.filter(id=conversation_id).first()
+        conversation.is_read = is_read
+        conversation.save()
+        
+        # Serialize conversations for the current page
+        serialized_conversation = conversation.to_json()
+
+        # Prepare the JSON response
+        response_data = {
+            'status': 200,
+            'message': 'Success',
+            'data': {
+                'results': serialized_conversation,
+            }
+        }
+        return JsonResponse(response_data, status=200)
         

@@ -64,6 +64,7 @@ class Contact(models.Model):
     name = models.CharField(max_length=255, null=True, blank=True)
     phone = models.CharField(max_length=20, null=True, blank=True)
     email = models.EmailField(null=True, blank=True)
+    is_blocked = models.BooleanField(default=False)
 
     class Meta:
         unique_together = ('twilio_account', 'phone',)
@@ -83,6 +84,7 @@ class Contact(models.Model):
             'name': self.name,
             'phone': self.phone,
             'email': self.email,
+            'is_blocked': self.is_blocked,
         }
         return json.dumps(data, cls=DjangoJSONEncoder)
 
@@ -199,8 +201,6 @@ class Message(models.Model):
             'updated_at': self.updated_at
         }
         return json.dumps(data, cls=DjangoJSONEncoder)
-
-
 
 
 class SoundProfile(models.Model):
