@@ -165,6 +165,7 @@ class Message(models.Model):
     from_number = models.CharField(max_length=20, blank=True, null=True)
     to_number = models.CharField(max_length=20, null=True, blank=True)
     text = models.TextField()
+    media = models.CharField(max_length=1000, default="[]")
     status = models.CharField(max_length=20, choices=STATUS.choices, blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -201,6 +202,7 @@ class Message(models.Model):
             'from_number': self.from_number,
             'to_number': self.to_number,
             'text': self.text,
+            'media': self.media,
             'status': self.status,
             'created_at': self.created_at,
             'updated_at': self.updated_at

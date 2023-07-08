@@ -55,6 +55,15 @@ def receive_sms(request):
             twilio_account = twilio_account,
             contact = contact
         )
+
+        # process media
+        num_media = int(data.get('NumMedia', ['0'])[0])
+
+        media_files = [(data.get("MediaUrl{}".format(i), ''),
+                    data.get("MediaContentType{}".format(i), ''))
+                    for i in range(0, num_media)]
+        media_files_json = json.dumps(media_files)
+        
         message = Message.objects.create(
             conversation = conversation,
             sender = Message.SENDER.CUSTOMER,
@@ -62,6 +71,7 @@ def receive_sms(request):
             from_number = data.get('From'),
             to_number = data.get('To'),
             text = data.get('Body'),
+            media = media_files_json,
             status = data.get('SmsStatus'),
         )
 
