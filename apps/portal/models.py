@@ -141,9 +141,10 @@ class Conversation(models.Model):
         return json.dumps(data, cls=DjangoJSONEncoder)
     
     def save(self, *args, **kwargs):
+        if not self.last_message:
+            self.last_message_time = timezone.now()
         super().save(*args, **kwargs)
-        self.last_message_time = self.updated_at
-        self.save()
+        
 
 class Message(models.Model):
 
