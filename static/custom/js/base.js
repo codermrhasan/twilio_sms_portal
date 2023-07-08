@@ -237,7 +237,7 @@ function makeBlockedFlagConversation(conversation_id, is_blocked){
 }
 
 // prepend single chat //should pass sid
-function prependSingleChat(sender, text, dateString=null, sms_status="queued", conversation_id, js_sms_uuid="", is_sending=false, sms_sid="") {
+function prependSingleChat(sender, text, dateString=null, sms_status="queued", conversation_id, js_sms_uuid="", is_sending=false, sms_sid="", media=[]) {
     let dateTime;
     if(dateString){
         dateTime = formatDateTime(dateString);
@@ -250,7 +250,25 @@ function prependSingleChat(sender, text, dateString=null, sms_status="queued", c
         let copyMailButton = extractEmailsFromText(messageText) ? `<button class="btn btn-sm btn-primary text-white copy-mail" onclick="copyToClipboard('${extractEmailsFromText(messageText)}')">
                                                                         <i class="bx bx-copy text-white"></i> Copy Mails
                                                                     </button>` : ""
+        let images_html = ""
+        for (let i = 0; i < media.length; i++) {
+            const med = media[i];
+            if(med[1].substring(0,5)==="image") {
+                images_html += `
+                <a class="popup-img d-inline-block" href="${med[0]}" target="_blank">
+                    <img src="${med[0]}" class="rounded border img-thumbnail" width="200" />
+                </a>
+                `
+            }
+        }
         $("#users-conversation").prepend(`
+        <li class="chat-list left" data-conversation_id=${conversation_id} data-sms_sid="${sms_sid}">
+            <div class="message-img-list">
+                <div>
+                    ${images_html}
+                </div>
+            </div>
+        </li>
         <li class="chat-list left" data-conversation_id=${conversation_id} data-sms_sid="${sms_sid}">
             <div class="conversation-list">
                 <div class="chat-avatar">
@@ -305,7 +323,7 @@ function prependSingleChat(sender, text, dateString=null, sms_status="queued", c
     scrollToBottom("users-chat");
 }
 // append single chat
-function appendSingleChat(sender, text, dateString=null, sms_status="queued", conversation_id, js_sms_uuid="", is_sending=false, sms_sid="") {
+function appendSingleChat(sender, text, dateString=null, sms_status="queued", conversation_id, js_sms_uuid="", is_sending=false, sms_sid="", media=[]) {
     let dateTime;
     if(dateString){
         dateTime = formatDateTime(dateString);
@@ -319,7 +337,26 @@ function appendSingleChat(sender, text, dateString=null, sms_status="queued", co
         let copyMailButton = emails ? `<button class="btn btn-sm btn-primary text-white copy-mail" onclick="copyToClipboard('${emails}')">
                                                                         <i class="bx bx-copy text-white"></i> Copy Mails
                                                                     </button>` : ""
+
+        let images_html = ""
+        for (let i = 0; i < media.length; i++) {
+            const med = media[i];
+            if(med[1].substring(0,5)==="image") {
+                images_html += `
+                <a class="popup-img d-inline-block" href="${med[0]}" target="_blank">
+                    <img src="${med[0]}" class="rounded border img-thumbnail" width="200" />
+                </a>
+                `
+            }
+        }
         $("#users-conversation").append(`
+        <li class="chat-list left" data-conversation_id=${conversation_id} data-sms_sid="${sms_sid}">
+            <div class="message-img-list">
+                <div>
+                    ${images_html}
+                </div>
+            </div>
+        </li>
         <li class="chat-list left" data-conversation_id=${conversation_id} data-sms_sid="${sms_sid}">
             <div class="conversation-list">
                 <div class="chat-avatar">
@@ -731,6 +768,7 @@ function get_chat_list(page = 1) {
                     // parase list item with nested parse
                     let messages = response.data.results.map(item => {
                         const parsedItem = JSON.parse(item);
+                        parsedItem.media = JSON.parse(parsedItem.media)
                         // parsedItem.twilio_account = JSON.parse(parsedItem.twilio_account);
                         // parsedItem.contact = JSON.parse(parsedItem.contact);
                         return parsedItem;
@@ -741,7 +779,8 @@ function get_chat_list(page = 1) {
                     if (messages){
                         for (i = 0; i < messages.length; i++) {
                             prependSingleChat(sender=messages[i].sender, text=messages[i].text, dateString=messages[i].updated_at, 
-                                sms_status=messages[i].status, conversation_id=activeConversation.id, js_sms_uuid="", is_sending=false, sms_sid=messages[i].sms_sid);
+                                sms_status=messages[i].status, conversation_id=activeConversation.id, js_sms_uuid="", is_sending=false, 
+                                sms_sid=messages[i].sms_sid, media=messages[i].media);
                             // scrollToBottom("users-chat");
                         }
                     } else {
@@ -939,6 +978,7 @@ socket.onmessage = function(event) {
     data.results = JSON.parse(message.message.results);
     data.results.conversation = JSON.parse(data.results.conversation);
     data.results.conversation.contact = JSON.parse(data.results.conversation.contact)
+    data.results.media = JSON.parse(data.results.media)
     // conversation prepend it.
     let conversation = data.results.conversation
 
@@ -953,7 +993,7 @@ socket.onmessage = function(event) {
         if (data.results.status == "queued"){
             // append
             appendSingleChat(sender='me', text=data.results.text, dateString=data.results.updated_at, sms_status=data.results.status,
-            conversation_id=data.results.conversation.id, js_sms_uuid=null, is_sending=false, sms_sid=data.results.sms_sid)
+            conversation_id=data.results.conversation.id, js_sms_uuid=null, is_sending=false, sms_sid=data.results.sms_sid, media=data.results.media)
         } else {
             if (data.results.status == "delivered"){
                 let audio_element = $("#sound_message_delivered");
@@ -978,7 +1018,7 @@ socket.onmessage = function(event) {
         // if active conversation append chat
         if (parseInt(activeConversation.id) === parseInt(data.results.conversation.id)) {
             appendSingleChat(sender='customer', text=data.results.text, dateString=data.results.updated_at, sms_status=data.results.status,
-            conversation_id=data.results.conversation.id, js_sms_uuid=null, is_sending=false, sms_sid=data.results.sms_sid)
+            conversation_id=data.results.conversation.id, js_sms_uuid=null, is_sending=false, sms_sid=data.results.sms_sid, media=data.results.media)
         }
     }
 
