@@ -107,7 +107,7 @@ class Conversation(models.Model):
     is_replied = models.BooleanField(default=False)
 
     class Meta:
-        ordering = ['-last_message_time']
+        ordering = ['-last_message_time', '-updated_at', '-created_at']
         unique_together = ('twilio_account', 'contact',)
 
     def __str__(self):
