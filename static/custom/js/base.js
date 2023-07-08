@@ -8,6 +8,7 @@ var activeConversation = {
     id: null,
     name: null,
     phone: null,
+    is_blocked: false,
     getShortName() {
         if (this.name) {
             return this.name.slice(0, 3)
@@ -108,10 +109,14 @@ function toggleSelected(conversation_id="") {
         activeConversation.id = parent.attr("data-id");
         activeConversation.name = parent.attr("data-uname")
         activeConversation.phone = parent.attr("data-phone")
+        activeConversation.is_blocked = parent.attr("data-is_blocked") == 'false' ? false : true
 
         $(".user-chat-topbar .avatar-title .username").html(activeConversation.getShortName())
         $(".user-chat-topbar h6 a").html(activeConversation.name)
         $(".user-chat-topbar p").html(activeConversation.phone)
+        
+        let block_label = $("#contact_block_unblock_form label")
+        activeConversation.is_blocked ? $(block_label).html("Unblock") : $(block_label).html("Block")
 
         $("#users-conversation").html("");
 
@@ -220,6 +225,14 @@ function makeRepliedFlagConversation(conversation_id, is_replied){
 
     } else {
         $(`#conversation-id-${conversation_id} .replied_flag`).removeClass("d-none");
+    }
+}
+
+function makeBlockedFlagConversation(conversation_id, is_blocked){
+    if(is_blocked){
+        $(`#conversation-id-${conversation_id} .blocked_flag`).removeClass("d-none");
+    } else {
+        $(`#conversation-id-${conversation_id} .blocked_flag`).addClass("d-none");
     }
 }
 
@@ -362,13 +375,14 @@ function appendSingleChat(sender, text, dateString=null, sms_status="queued", co
     scrollToBottom("users-chat");
 }
 
-function prependSingleConversation(conversation_id, contact_name, contact_phone, last_message, is_read, is_lead, is_replied){
+function prependSingleConversation(conversation_id, contact_name, contact_phone, last_message, is_read, is_lead, is_replied, is_blocked=false){
     if ( $(`#usersList li#conversation-id-${conversation_id}`).length ){
         $(`#usersList li#conversation-id-${conversation_id}`).remove();
     }
     $("#usersList").prepend(`
         <li id="conversation-id-${conversation_id}" class=""
-        data-name="favorite" data-id=${conversation_id} data-uname="${contact_name}" data-phone="${contact_phone}"> 
+        data-name="favorite" data-id=${conversation_id} data-uname="${contact_name}" data-phone="${contact_phone}"
+        data-is_blocked="${is_blocked}"> 
             <a href="javascript: void(0);">
                 <div class="d-flex align-items-center">
                     <div class="chat-user-img online align-self-center me-2 ms-0">
@@ -383,6 +397,7 @@ function prependSingleConversation(conversation_id, contact_name, contact_phone,
                         <p class="text-truncate last-message text-muted fs-13 mb-0">${last_message ? last_message.substring(0, 20): ""}...</p>
                     </div>
                     <div class="ms-auto">
+                        <i class='blocked_flag d-none bx bx-block text-danger'></i>
                         <i class='replied_flag d-none bx bxs-message-rounded-x text-danger'></i>
                         <i class='lead_flag d-none bx bxs-envelope text-primary'></i>
                         <i class='unread_flag d-none bx bxs-circle text-primary fs-10'></i>
@@ -394,13 +409,15 @@ function prependSingleConversation(conversation_id, contact_name, contact_phone,
     makeReadUnreadFlagConversation(conversation_id=conversation_id, is_read=is_read);
     makeLeadFlagConversation(conversation_id=conversation_id, is_lead=is_lead)
     makeRepliedFlagConversation(conversation_id=conversation_id, is_replied=is_replied)
+    makeBlockedFlagConversation(conversation_id=conversation_id, is_blocked=is_blocked)
     toggleSelected(conversation_id=conversation_id);
 }
 
-function appendSingleConversation(conversation_id, contact_name, contact_phone, last_message, is_read, is_lead, is_replied){
+function appendSingleConversation(conversation_id, contact_name, contact_phone, last_message, is_read, is_lead, is_replied, is_blocked=false){
     $("#usersList").append(`
         <li id="conversation-id-${conversation_id}" class=""
-        data-name="favorite" data-id=${conversation_id} data-uname="${contact_name}" data-phone="${contact_phone}"> 
+        data-name="favorite" data-id=${conversation_id} data-uname="${contact_name}" data-phone="${contact_phone}"
+        data-is_blocked="${is_blocked}"> 
             <a href="javascript: void(0);">
                 <div class="d-flex align-items-center">
                     <div class="chat-user-img online align-self-center me-2 ms-0">
@@ -415,6 +432,7 @@ function appendSingleConversation(conversation_id, contact_name, contact_phone, 
                         <p class="text-truncate last-message text-muted fs-13 mb-0">${last_message ? last_message.substring(0, 20): ""}...</p>
                     </div>
                     <div class="ms-auto">
+                        <i class='blocked_flag d-none bx bx-block text-danger'></i>
                         <i class='replied_flag d-none bx bxs-message-rounded-x text-danger'></i>
                         <i class='lead_flag d-none bx bxs-envelope text-primary'></i>
                         <i class='unread_flag d-none bx bxs-circle text-primary fs-10'></i>
@@ -427,6 +445,7 @@ function appendSingleConversation(conversation_id, contact_name, contact_phone, 
     makeReadUnreadFlagConversation(conversation_id=conversation_id, is_read=is_read);
     makeLeadFlagConversation(conversation_id=conversation_id, is_lead=is_lead)
     makeRepliedFlagConversation(conversation_id=conversation_id, is_replied=is_replied)
+    makeBlockedFlagConversation(conversation_id=conversation_id, is_blocked=is_blocked)
     toggleSelected(conversation_id=conversation_id);
 }
 
@@ -567,7 +586,8 @@ function get_conversation_list(page = 1) {
                     for (i = 0; i < conversations.length; i++) {
                         appendSingleConversation(conversation_id=conversations[i].id, contact_name=conversations[i].contact.name, 
                             contact_phone=conversations[i].contact.phone, last_message=conversations[i].last_message, 
-                            is_read=conversations[i].is_read, is_lead=conversations[i].is_lead, is_replied=conversations[i].is_replied
+                            is_read=conversations[i].is_read, is_lead=conversations[i].is_lead, is_replied=conversations[i].is_replied,
+                            is_blocked=conversations[i].contact.is_blocked
                         )
                     }
                 } else {
@@ -601,6 +621,85 @@ $("button.more_conversations_btn").on("click", function(event) {
 $( "#pills-chat-tab" ).on( "click", function( event ) {
     get_conversation_list(page=1)
 });
+
+// Conversation Mark as Read unread
+function mark_as_read_unread(url, csrfmiddlewaretoken, conversation_id, is_read) {
+    let prev_html = $("#mark_as_read_unread_form button").html()
+    $("#mark_as_read_unread_form button").html(`<div class="spinner-grow" role="status">
+                                                </div>`)
+    $.ajax({
+        url: url,  
+        type: 'POST',
+        dataType: 'json',
+        data: {
+            csrfmiddlewaretoken: csrfmiddlewaretoken,
+            conversation_id: conversation_id,
+            is_read: is_read
+        },
+        success: function (response) {
+            // Handle the successful response
+            if (response.status === 200) {
+                let conversation = JSON.parse(response.data.results);
+                $(`#usersList li#conversation-id-${conversation.id} .unread_flag`).addClass("d-none");
+                $("#mark_as_read_unread_form button").html(prev_html);
+            }
+        },
+        error: function (xhr, textStatus, errorThrown) {
+            // Handle the error
+            console.log(xhr.responseText);
+        }
+    });
+}
+
+$( "#mark_as_read_unread_form" ).on( "submit", function( event ) {
+    event.preventDefault();
+    let csrfmiddlewaretoken = $(this).find("[name='csrfmiddlewaretoken']").val()
+    let url = $(this).attr("action");
+    mark_as_read_unread(url, csrfmiddlewaretoken, activeConversation.id, is_read=true);
+});
+
+
+// Contact Block or Unblock
+function contact_block_unblock(url, csrfmiddlewaretoken, conversation_id, contact_phone, is_blocked) {
+
+    let prev_html = $("#contact_block_unblock_form button").html()
+    $("#contact_block_unblock_form button").html(`<div class="spinner-grow" role="status">
+                                                </div>`)
+    $.ajax({
+        url: url,  
+        type: 'post',
+        dataType: 'json',
+        data: {
+            csrfmiddlewaretoken: csrfmiddlewaretoken,
+            contact_phone: contact_phone,
+            is_blocked: is_blocked
+        },
+        success: function (response) {
+            // Handle the successful response
+            if (response.status === 200) {
+                is_blocked ? $(`#usersList li#conversation-id-${conversation_id} .blocked_flag`).removeClass("d-none") : $(`#usersList li#conversation-id-${conversation_id} .blocked_flag`).addClass("d-none")
+                $("#contact_block_unblock_form button").html(prev_html);
+                if(activeConversation.id == conversation_id) {
+                    $("#contact_block_unblock_form label").html(`${is_blocked ? 'Unblock' : 'Block'}`)
+                    activeConversation.is_blocked = is_blocked;
+                }
+            }
+        },
+        error: function (xhr, textStatus, errorThrown) {
+            // Handle the error
+            console.log(xhr.responseText);
+        }
+    });
+}
+
+$( "#contact_block_unblock_form" ).on( "submit", function( event ) {
+    event.preventDefault();
+    let csrfmiddlewaretoken = $(this).find("[name='csrfmiddlewaretoken']").val()
+    let url = $(this).attr("action");
+    contact_block_unblock(url, csrfmiddlewaretoken, activeConversation.id, activeConversation.phone, is_blocked = !activeConversation.is_blocked);
+});
+
+
 // Conversation Delete
 
 // Chat List/history (chat history with 1 user)
@@ -672,20 +771,12 @@ function send_message(csrfmiddlewaretoken, text, url, conversation_id, js_sms_uu
         data: {
             csrfmiddlewaretoken: csrfmiddlewaretoken,
             text: text,
-            conversation_id: conversation_id,
-            js_sms_uuid: js_sms_uuid
+            conversation_id: conversation_id
         },
         success: function (response) {
             // Handle the successful response
             if (response.status === 200) {
-                let message = JSON.parse(response.data.results);
-                message.conversation = JSON.parse(message.conversation);
-                if ( parseInt(message.conversation.id) === parseInt(activeConversation.id) ){
-                    let element = $(`.chat-list[data-conversation_id='${message.conversation.id}'][data-js_sms_uuid='${response.data.js_sms_uuid}']`)
-                    $(element).find(".sms-status-icon").html(statusIcons[message.status])
-                    $(element).find("small.time").html(formatDateTime(message.updated_at));
-                    $(element).attr("data-sms_sid", message.sms_sid)
-                }
+                // console.log("Message Created!")
             }
         },
         error: function (xhr, textStatus, errorThrown) {
@@ -702,7 +793,7 @@ $( "#chatinput-form" ).on( "submit", function( event ) {
     let text = $(chatForm).find("[name='text']").val()
     let url = $(chatForm).attr("action");
     let js_sms_uuid = generateUUID();
-    appendSingleChat(sender = 'me', text=text, dateString=null, sms_status="", conversation_id = activeConversation.id , js_sms_uuid=js_sms_uuid, is_sending=true)
+    // appendSingleChat(sender = 'me', text=text, dateString=null, sms_status="", conversation_id = activeConversation.id , js_sms_uuid=js_sms_uuid, is_sending=true)
     send_message(csrfmiddlewaretoken, text, url, activeConversation.id, js_sms_uuid);
     $(chatForm).find("[name='text']").val("")
 });
@@ -745,7 +836,8 @@ function get_or_create_contact_conversation_message(url, csrfmiddlewaretoken, ph
                 conversation.contact = JSON.parse(conversation.contact);
                 prependSingleConversation(conversation_id=conversation.id, contact_name=conversation.contact.name, 
                     contact_phone=conversation.contact.phone, last_message=conversation.last_message, 
-                    is_read=conversation.is_read, is_lead=conversation.is_lead, is_replied=conversation.is_replied)
+                    is_read=conversation.is_read, is_lead=conversation.is_lead, is_replied=conversation.is_replied,
+                    is_blocked=conversation.contact.is_blocked)
                 $(".contactModal").modal("hide");
                 $(`#usersList li#conversation-id-${conversation.id} a`).trigger('click');
             }
@@ -853,17 +945,25 @@ socket.onmessage = function(event) {
     prependSingleConversation(
         conversation_id=conversation.id, contact_name=conversation.contact.name, 
         contact_phone=conversation.contact.phone, last_message=conversation.last_message,
-        is_read=conversation.is_read, is_lead=conversation.is_lead, is_replied=conversation.is_replied
+        is_read=conversation.is_read, is_lead=conversation.is_lead, is_replied=conversation.is_replied,
+        is_blocked=conversation.contact.is_blocked
     )
 
     if (data.type === "sent_sms_status" && parseInt(activeConversation.id) === parseInt(data.results.conversation.id)) {
-        if (data.results.status == "delivered"){
-            let audio_element = $("#sound_message_delivered");
-            if (localStorage.getItem('message_delivered')==='true'){
-                playSound(audio_element=audio_element);
+        if (data.results.status == "queued"){
+            // append
+            appendSingleChat(sender='me', text=data.results.text, dateString=data.results.updated_at, sms_status=data.results.status,
+            conversation_id=data.results.conversation.id, js_sms_uuid=null, is_sending=false, sms_sid=data.results.sms_sid)
+        } else {
+            if (data.results.status == "delivered"){
+                let audio_element = $("#sound_message_delivered");
+                if (localStorage.getItem('message_delivered')==='true'){
+                    playSound(audio_element=audio_element);
+                }
             }
+            $(`li.chat-list.right[data-sms_sid='${data.results.sms_sid}'] .sms-status-icon`).html(`${statusIcons[data.results.status]}`)
         }
-        $(`li.chat-list.right[data-sms_sid='${data.results.sms_sid}'] .sms-status-icon`).html(`${statusIcons[data.results.status]}`)
+        
     } else if (data.type === "receive_sms") {
         // play notification sound
         let emails = extractEmailsFromText(data.results.text);

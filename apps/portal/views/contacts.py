@@ -52,4 +52,23 @@ class ContactView(LoginRequiredMixin, View):
                 'message': 'Page not found',
             }
             return JsonResponse(response_data, status=404)
+    
+    def post(self, request):
+        # Block contact
+        is_blocked = request.POST.get('is_blocked') == 'true'
+        contact_phone = request.POST.get('contact_phone')
+        contact = request.user.twilio_account.contacts.get(phone=contact_phone)
+        contact.is_blocked = is_blocked
+        contact.save()
+
+        serialized_contact = contact.to_json()
         
+        response_data = {
+            'status': 200,
+            'message': 'Success',
+            'data': {
+                'results': serialized_contact,
+            }
+        }
+        return JsonResponse(response_data, status=200)
+    
