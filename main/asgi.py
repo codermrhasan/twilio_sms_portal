@@ -45,6 +45,9 @@ load_dotenv(
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'main.settings')
 
+# # Initialize Django setup
+# django.setup()
+
 application = ProtocolTypeRouter(
     {
         'http': get_asgi_application(),

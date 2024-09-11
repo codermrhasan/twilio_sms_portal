@@ -4,7 +4,7 @@ import json
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
 
-from apps.portal.models import Message, TwilioAccount, Contact, Conversation
+from apps.portal.models import Message, TwilioAccount, Contact, Conversation, PhoneNumber
 
 
 channel_layer = get_channel_layer()
@@ -44,8 +44,11 @@ def receive_sms(request):
         # try to get message obj
 
         # if not found create convers
+        to_number = data.get('To')
+        phone_number = PhoneNumber.objects.get(phone_number=to_number, is_default=True)
+        twilio_account = phone_number.twilio_account
+        # twilio_account = TwilioAccount.objects.get(twilio_account_sid=data.get('AccountSid', None), )
 
-        twilio_account = TwilioAccount.objects.get(twilio_account_sid=data.get('AccountSid', None), )
         contact, contact_created = Contact.objects.get_or_create(
             phone=data.get('From'),
             twilio_account = twilio_account,

@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models import Q
 from django.contrib.auth.models import User
 from django.utils import timezone
 import re
@@ -34,11 +35,15 @@ class TwilioAccount(models.Model):
 
 class PhoneNumber(models.Model):
     twilio_account = models.ForeignKey(TwilioAccount, on_delete=models.CASCADE, related_name="phone_numbers")
-    phone_number = models.CharField(max_length=20, unique=True)
+    phone_number = models.CharField(max_length=20)
     is_default = models.BooleanField(default=False)
 
     class Meta:
-        unique_together = ('twilio_account', 'phone_number',)
+        # unique_together = ('twilio_account', 'phone_number',)
+        constraints = [
+            models.UniqueConstraint(fields=['twilio_account', 'phone_number'], name='unique_phone_per_account'),
+            models.UniqueConstraint(fields=['phone_number'], condition=Q(is_default=True), name='unique_default_phone'),
+        ]
     
     def __str__(self):
         return f"{self.phone_number}"
