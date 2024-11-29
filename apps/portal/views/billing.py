@@ -45,14 +45,11 @@ class Billing(LoginRequiredMixin, View):
                     conversations__messages__created_at__range=(start_date, end_date)
                 )
             ),
-            total_messages=ExpressionWrapper(
-                Count(
-                    'conversations__messages',
-                    filter=Q(
-                        conversations__messages__created_at__range=(start_date, end_date)
-                    )
-                ),
-                output_field=FloatField()
+            total_messages=Count(
+                'conversations__messages',
+                filter=Q(
+                    conversations__messages__created_at__range=(start_date, end_date)
+                )
             )
         ).values('username', 'total_incoming', 'total_outgoing', 'total_messages')
 
