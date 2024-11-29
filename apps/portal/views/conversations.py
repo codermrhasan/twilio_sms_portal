@@ -11,7 +11,19 @@ class ConversationView(LoginRequiredMixin, View):
     def get(self, request):
         # twilio_account_id = request.GET.get('twilio_account_id')
         # contact_id = request.GET.get('contact_id')
-        conversations = request.user.twilio_account.conversations.all()
+        try:
+            conversations = request.user.twilio_account.conversations.all()
+        except:
+            return JsonResponse({
+                'status': 200,
+                'message': 'Success',
+                'data': {
+                    'results': [],
+                    'pagination': {
+                        'count': 0
+                    }
+                }
+            }, status=200)
         # Set the default pagination size
         page_number = request.GET.get('page', 1)
         paginator = Paginator(conversations, 50)

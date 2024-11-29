@@ -7,11 +7,13 @@ from .views import (
     MessageView,
     ContactNConversationView,
     MarkAsReadUnreadView,
+    Billing
 )
 
 
 urlpatterns = [
     path('', HomeView.as_view(), name='home'),
+    path('billing/', Billing.as_view(), name='billing'),
     path('contact/', ContactView.as_view(), name='contact'),
     path('conversation/', ConversationView.as_view(), name='conversation'),
     path('conversation/mark-as-read-unread/', MarkAsReadUnreadView.as_view(), name='mark_as_read_unread'),

@@ -12,7 +12,7 @@ from apps.portal.libs.messages import TwilioAPI
 from apps.portal.libs.email_finder import check_email_in_text
 
 class TwilioAccount(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="twilio_account")
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="twilio_account", null=True, blank=True)
     twilio_account_sid = models.CharField(max_length=255)
     twilio_auth_token = models.CharField(max_length=255)
     websocket_id = models.CharField(max_length=255, blank=True, null=True)
