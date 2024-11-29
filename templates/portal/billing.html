@@ -29,9 +29,10 @@
                         <input type="submit" class="btn btn-primary px-4">
                     </div>
                 </div>
+                <div class="row"><small class="text-info">N.B: Please enter UTC date</small></div>
             </form>
         </div>
-        <div class="py3">
+        <div class="py-3">
             <div class="table-responsive">
                 <table class="table table-striped">
                     <thead>
@@ -40,6 +41,7 @@
                             <th scope="col">User</th>
                             <th scope="col">Inbound Msg</th>
                             <th scope="col">Outbound Msg</th>
+                            <th scope="col">Total Msg</th>
                             <th scope="col">Inbound Cost ($)</th>
                             <th scope="col">Outbound Cost ($)</th>
                             <th scope="col">Total Cost ($)</th>
@@ -52,9 +54,10 @@
                             <td>{{ item.username }}</td>
                             <td>{{ item.total_incoming }}</td>
                             <td>{{ item.total_outgoing }}</td>
+                            <td>{{ item.total_messages }}</td>
                             <td>${{ user.total_incoming|multiply:0.0079|floatformat:4 }}</td>
                             <td>${{ item.total_outgoing|multiply:0.0079|floatformat:4  }}</td>
-                            <td>${{ item.total_message|multiply:0.0079|floatformat:4  }}</td>
+                            <td>${{ item.total_messages|multiply:0.0079|floatformat:4  }}</td>
                         </tr>
                         {% endfor %}
                     </tbody>
